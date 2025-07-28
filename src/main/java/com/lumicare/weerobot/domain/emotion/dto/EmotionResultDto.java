@@ -18,4 +18,6 @@ public class EmotionResultDto {
     private EmotionType emotion;
     private BigDecimal confidence;
     private LocalDateTime capturedAt;
+    private String advice; // GPT 메시지
+    private String error;
 }

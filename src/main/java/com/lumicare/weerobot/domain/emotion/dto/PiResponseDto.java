@@ -15,4 +15,6 @@ import java.math.BigDecimal;
 public class PiResponseDto {
     private EmotionType emotion;
     private BigDecimal confidence;
+    private String advice; // GPT 메시지
+    private String error;
 }
