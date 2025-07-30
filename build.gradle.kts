@@ -30,6 +30,7 @@ dependencyManagement {
 }
 
 dependencies {
+	implementation ("com.fasterxml.jackson.core:jackson-databind") //추가
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
