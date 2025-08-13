@@ -22,37 +22,19 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/member/signup", "/api/member/login", "/api/member/checkId").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .authorizeHttpRequests((auth) -> auth
+                        .requestMatchers("/api/member/signup", "/api/member/login", "/api/member/checkId").permitAll()
+                        .requestMatchers("/api/emotions/analyze", "/api/emotions/calendar", "/api/emotions/count", "/api/emotions/solution", "/api/emotions/day").permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
+                .csrf((auth) -> auth.disable())
                 .build();
-    }
-
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
     @Bean
