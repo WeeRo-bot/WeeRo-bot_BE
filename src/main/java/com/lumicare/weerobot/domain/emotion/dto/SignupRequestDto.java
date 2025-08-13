@@ -16,8 +16,14 @@ public class SignupRequestDto {
     @Pattern(regexp = "^[a-zA-Z0-9]+$", message = "아이디는 문자와 숫자만 가능합니다.")
     private String id;
 
-    @NotBlank(message = "비밀번호")
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Size(min = 8, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[!@#$%^&*()_+]).+$",
+            message = "비밀번호는 영문, 숫자, 특수문자를 모두 포함해야 합니다."
+    )
     private String password;
+
 
     @NotBlank(message = "비밀번호 확인")
     private String passwordConfirm;  // 비밀번호 확인용 필드
