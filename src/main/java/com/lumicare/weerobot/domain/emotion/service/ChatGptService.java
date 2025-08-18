@@ -36,7 +36,7 @@ public class ChatGptService {
 
         String prompt = String.format(
                 "사용자 정보: [%s]. 현재 사용자의 감정은 '%s'입니다. " +
-                        "사용자의 상황과 감정을 고려해, 진심 어린 위로와 격려의 말을 1~2문장, 100자 이하로 작성해주세요.",
+                        "사용자의 상황과 감정을 고려해, 감정에 대해 짧게 반응·조언을 1~2문장, 100자 이하로 작성해주세요.",
                 userInfo,
                 topEmotion
         );
@@ -49,7 +49,7 @@ public class ChatGptService {
         List<Map<String, String>> messages = new ArrayList<>();
         Map<String, String> systemMessage = new HashMap<>();
         systemMessage.put("role", "system");
-        systemMessage.put("content", "너는 사용자 정보를 기반으로 감정에 공감하며 따뜻한 위로를 주는 심리 상담사야.");
+        systemMessage.put("content", "너는 사용자 정보를 기반으로 사용자에게 감정에 따라 따뜻한 위로 메시지를 주는 심리 상담사야.");
         messages.add(systemMessage);
 
         Map<String, String> userMessage = new HashMap<>();

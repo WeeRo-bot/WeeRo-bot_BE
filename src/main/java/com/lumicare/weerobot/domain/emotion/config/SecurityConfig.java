@@ -5,12 +5,18 @@ import com.lumicare.weerobot.domain.emotion.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +29,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/member/signup", "/api/member/login", "/api/member/checkId","/emotion/**","/api/chat/advice").permitAll()
+                        .requestMatchers("/api/emotions/analyze", "/api/emotions/calendar", "/api/emotions/count", "/api/emotions/solution", "/api/emotions/day").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
