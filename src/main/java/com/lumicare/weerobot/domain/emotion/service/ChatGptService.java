@@ -13,7 +13,7 @@ import java.util.*;
 @Service
 public class ChatGptService {
 
-    @Value("${openai.api-key}")
+    @Value("${openai.api.key}")
     private String apiKey;
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
