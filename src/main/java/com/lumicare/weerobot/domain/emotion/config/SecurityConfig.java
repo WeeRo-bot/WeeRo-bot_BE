@@ -33,7 +33,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
-//                .csrf((auth) -> auth.disable())
+                .csrf((auth) -> auth.disable())
                 .build();
     }
 
