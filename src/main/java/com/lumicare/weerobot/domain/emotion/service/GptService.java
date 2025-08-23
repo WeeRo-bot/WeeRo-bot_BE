@@ -1,5 +1,6 @@
 package com.lumicare.weerobot.domain.emotion.service;
 
+import com.lumicare.weerobot.domain.emotion.entity.UserEntity;
 import com.lumicare.weerobot.domain.emotion.enums.EmotionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,13 +22,30 @@ public class GptService {
 
     private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 
-    public String generateSolutionMessage(EmotionType emotionType) {
-        String prompt = getPromptForEmotion(emotionType);
+    public String generateSolutionMessage(UserEntity user, EmotionType emotionType) {
+        // 사용자 정보 문자열 구성
+        String userInfo = String.format(
+                "이름: %s, 나이: %d, 성별: %s, 직업: %s, 고민: %s",
+                user.getName(),
+                user.getAge(),
+                user.getGender() != null ? user.getGender().toString() : "알 수 없음",
+                user.getOccupation() != null ? user.getOccupation() : "알 수 없음",
+                user.getConcern() != null ? user.getConcern() : "알 수 없음"
+        );
+
+        // 감정별 프롬프트 + 사용자 정보
+        String prompt = String.format(
+                "사용자 정보: [%s]\n%s",
+                userInfo,
+                getPromptForEmotion(emotionType)
+        );
+
+        System.out.println("GPT 요청 프롬프트: " + prompt);
 
         Map<String, Object> request = Map.of(
                 "model", "gpt-4",
                 "messages", List.of(
-                        Map.of("role", "system", "content", "너는 사용자에게 감정에 따라 따뜻한 위로 메시지를 주는 조언가야."),
+                        Map.of("role", "system", "content", "너는 사용자 정보를 기반으로, 감정에 맞는 따뜻한 조언과 위로 메시지를 제공하는 상담사야."),
                         Map.of("role", "user", "content", prompt)
                 )
         );

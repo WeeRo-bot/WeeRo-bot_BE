@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import com.lumicare.weerobot.domain.emotion.entity.UserEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -118,6 +121,15 @@ public class EmotionService {
 
     // 솔루션 제공
     public EmotionSolutionDto getEmotionSolution(int year, int month) {
+
+        // JWT에서 현재 사용자 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return new EmotionSolutionDto(null, "로그인 정보가 없습니다.");
+        }
+
+        UserEntity currentUser = (UserEntity) authentication.getPrincipal(); // JWT에서 UserEntity가 담겨 있다고 가정
+
         List<EmotionCountResponseDto> countList = getEmotionCount(year, month);
 
         // 우선순위 정의
@@ -152,7 +164,7 @@ public class EmotionService {
         }
 
         // GPT로 솔루션 메시지 생성
-        String solutionMessage = gptService.generateSolutionMessage(mainEmotion);
+        String solutionMessage = gptService.generateSolutionMessage(currentUser,mainEmotion);
 
         return new EmotionSolutionDto(mainEmotion, solutionMessage);
     }

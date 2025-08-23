@@ -8,7 +8,7 @@ import org.springframework.http.*;
 @Service
 public class TextEmotionService {
 
-    private final String FASTAPI_URL = "http://192.168.0.8:8001/predict";
+    private final String FASTAPI_URL = "http://192.168.35.97:8001/predict";
 
     public TextEmotionResponse sendToFastAPI(TextRequest request) {
         RestTemplate restTemplate = new RestTemplate();
