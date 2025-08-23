@@ -7,20 +7,28 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.util.*;
 
+import java.util.*;
 
 @Service
 public class ChatGptService {
 
+    private final RestTemplate restTemplate;
+
     @Value("${openai.api.key}")
     private String apiKey;
+
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
 
-    public String getAdviceByEmotion(UserEntity user, String topEmotion) {
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
+    // RestTemplate 주입
+    public ChatGptService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
+    // 사용자 정보 + 감정 기반 GPT 조언
+    public String getAdviceByEmotion(UserEntity user, String topEmotion) {
+
+        HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
@@ -41,34 +49,37 @@ public class ChatGptService {
                 topEmotion
         );
 
-        // JSON 객체 생성
+        // 요청 JSON 구성
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("model", "gpt-4");
         requestBody.put("temperature", 0.7);
 
         List<Map<String, String>> messages = new ArrayList<>();
-        Map<String, String> systemMessage = new HashMap<>();
-        systemMessage.put("role", "system");
-        systemMessage.put("content", "너는 사용자 정보를 기반으로 사용자에게 감정에 따라 따뜻한 위로 메시지를 주는 심리 상담사야.");
+        Map<String, String> systemMessage = Map.of(
+                "role", "system",
+                "content", "너는 사용자 정보를 기반으로 사용자에게 감정에 따라 따뜻한 위로 메시지를 주는 조언가야."
+        );
         messages.add(systemMessage);
 
-        Map<String, String> userMessage = new HashMap<>();
-        userMessage.put("role", "user");
-        userMessage.put("content", prompt);
+        Map<String, String> userMessage = Map.of(
+                "role", "user",
+                "content", prompt
+        );
         messages.add(userMessage);
 
         requestBody.put("messages", messages);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> response = restTemplate.postForEntity(API_URL, entity, String.class);
 
         try {
+            ResponseEntity<String> response = restTemplate.postForEntity(API_URL, entity, String.class);
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(response.getBody());
             return root.path("choices").get(0).path("message").path("content").asText();
         } catch (Exception e) {
+            e.printStackTrace();
             return "조언을 가져오는 중 오류가 발생했어요.";
         }
     }
-
 }
+
